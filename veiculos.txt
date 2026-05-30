@@ -1,0 +1,6 @@
+codigo	modelo	cor	ano	odometro	cidade	disponivel	valor_diaria	valor_km_rodado
+1	GOl	Branco	2020	50000	Porto Alegre	true	120.0	0.8
+2	Onix	Preto	2021	32000	São Leopoldo	true	150.0	1.0
+3	Civic	Cinza	2019	71000	Novo Hamburgo	true	220.0	1.5
+4	Corolla	Prata	2022	18000	Canoas	true	250.0	1.8
+5	Ka	Vermelho	2018	84000		true	100.0	0.7	
