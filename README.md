@@ -1,1 +1,1 @@
-# SistemaLocadora-trabalhoGB
+Sistema básico de locação de veículos em desenvolvimento
