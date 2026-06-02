@@ -116,9 +116,7 @@ public class Veiculo {
     // método toString
     @Override
     public String toString() {
-        return "Código: " + codigo +
-                " | Modelo: " + modelo +
-                " | Cidade: " + cidade +
-                " | Disponível: " + disponivel;
+        return "codigo: " + codigo + " |" + " modelo: " + modelo + " |" + " cor: " + cor + " |" + " ano: " + ano + " |" + " odometro: "
+                + odometro + "km" + " |" + " cidade: " + cidade + " |" + " disponivel: " + disponivel;
     }
 }
