@@ -6,21 +6,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Locadora {
-    //atributos
+    // atributos
     ArrayList<Veiculo> veiculos = new ArrayList<>();
     ArrayList<Locacao> locacoes = new ArrayList<>();
     // variável para controle
     boolean encontrado = false;
 
     // método para carregar os dados dos arquivos "veiculos.txt" e "locacoes.txt"
-    public void carregaDados(){
+    public void carregaDados() {
         // lendo os arquivos txt e salvando em objetos no arraylist
         try {
             FileReader readerVeiculos = new FileReader("veiculos.txt");
             BufferedReader bufferVeiculos = new BufferedReader(readerVeiculos);
             FileReader readerLocacoes = new FileReader("locacoes.txt");
             BufferedReader bufferLocacoes = new BufferedReader(readerLocacoes);
-            
+
             String linhaV;
             String linhaL;
             bufferVeiculos.readLine();// ignora cabeçalho
@@ -33,7 +33,7 @@ public class Locadora {
             }
 
             bufferLocacoes.readLine();// ignora cabeçalho
-            //while para ler locacoes.txt
+            // while para ler locacoes.txt
             while ((linhaL = bufferLocacoes.readLine()) != null) {
                 Locacao l = new Locacao();
                 l.desserializar(linhaL, veiculos);
@@ -47,13 +47,13 @@ public class Locadora {
     }
 
     // método para salvar dados nos arquivos
-    public void salvaDados(){
+    public void salvaDados() {
         try {
             FileWriter writerVeiculos = new FileWriter("veiculos.txt");
             BufferedWriter bufferVeiculos = new BufferedWriter(writerVeiculos);
             FileWriter writerLocacoes = new FileWriter("locacoes.txt");
             BufferedWriter bufferLocacoes = new BufferedWriter(writerLocacoes);
-            
+
             // salva veiculos no txt
             for (Veiculo v : veiculos) {
                 bufferVeiculos.write(v.serializar());
@@ -73,8 +73,8 @@ public class Locadora {
         }
     }
 
-    // método para consultar veiculos 
-    public void consultaVeiculo(){
+    // método para consultar veiculos
+    public void consultaVeiculo() {
         System.out.println("Opções de pesquisa:");
         System.out.println("1- Modelo\n2- Cor\n3- Ano\n4- Cidade");
 
@@ -103,7 +103,7 @@ public class Locadora {
                 encontrado = false;
                 String cor = Teclado.leString("Cor: ");
 
-                for(Veiculo v : veiculos){
+                for (Veiculo v : veiculos) {
                     if (v.getCor().equalsIgnoreCase(cor)) {
                         System.out.println(v);
                     }
@@ -119,7 +119,7 @@ public class Locadora {
                 encontrado = false;
                 int ano = Teclado.leInt("Ano: ");
 
-                for(Veiculo v : veiculos){
+                for (Veiculo v : veiculos) {
                     if (v.getAno() == ano) {
                         System.out.println(v);
                     }
@@ -135,18 +135,77 @@ public class Locadora {
                 encontrado = false;
                 String cidade = Teclado.leString("Cidade: ");
 
-                for(Veiculo v : veiculos){
+                for (Veiculo v : veiculos) {
                     if (v.getCidade().equalsIgnoreCase(cidade)) {
                         System.out.println(v);
                     }
                 }
 
                 if (encontrado == false) {
-                    System.out.println("Cor não encontrada.");
+                    System.out.println("Cidade não encontrada.");
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    // métoo para realizar locação
+    public void realizaLocacao() {
+        String cidade = Teclado.leString("Em qual cidade você deseja alugar o veículo? ");
+        encontrado = false;
+
+        for (Veiculo v : veiculos) {
+            if (v.getCidade().equalsIgnoreCase(cidade) && v.isDisponivel()) {
+                System.out.println(v);
+                encontrado = true;
+            }
+        }
+
+        if (encontrado == false) {
+            System.out.println("Veículos não encontrados em " + cidade);
+            return;
+        }
+
+        int codigo = Teclado.leInt("Informe o código do veículo que deseja alugar: ");
+        Veiculo veiculoSelecionado = null;
+
+        for (Veiculo v : veiculos) {
+            if (v.getCodigo() == codigo && v.isDisponivel()) {
+                veiculoSelecionado = v;
+                break;
+            }
+        }
+
+        if (veiculoSelecionado == null) {
+            System.out.println("Código inválido.");
+            return;
+        }
+
+        // recebendo dados do usuário e criando a locacao
+        String nomeCliente = Teclado.leString("Digite seu nome: ");
+        // verifica se o cliente possui algum aluguel em aberto
+        for (Locacao l : locacoes) {
+            if (l.getCliente().equalsIgnoreCase(nomeCliente) && !l.getVeiculo().isDisponivel()) {
+                System.out.println("Este cliente já possui uma locação em aberto.");
+                return;
+            }
+        }
+        int qtDias = Teclado.leInt("Digite a quantidade de dias do aluguel: ");
+        double valorDiarias = veiculoSelecionado.getValor_diaria() * qtDias;
+        System.out.printf("Valor da diária: R$%.2f", veiculoSelecionado.getValor_diaria());
+        System.out.printf("\nTotal: R$%.2f", valorDiarias);
+
+        String aceita = Teclado.leString("\nDigite (s) para confirmar aluguel ou (n) para não alugar: ");
+        if (aceita.equalsIgnoreCase("não") || aceita.equalsIgnoreCase("n")) {
+            System.out.println("Aluguel cancelado.");
+            return;
+        }
+
+        // cria locação
+        Locacao locacao = new Locacao(veiculoSelecionado, nomeCliente, veiculoSelecionado.getCidade(), qtDias);
+        locacoes.add(locacao); // adicionando a locação no arraylist
+        veiculoSelecionado.setDisponivel(false);// seta veículo como indisponível
+        System.out.println("Locação realizada com sucesso.");
     }
 }

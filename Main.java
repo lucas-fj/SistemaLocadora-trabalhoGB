@@ -25,12 +25,20 @@ public class Main {
             
             switch (escolha) {
                 case 1:
-                    System.out.print("\033\143");
+                    System.out.print("\033\143"); // limpa tela do terminal
                     locadora.consultaVeiculo();
                     System.out.println("Pressione enter para voltar ao menu...");
                     Teclado.leString();
                     break;
+                
+                case 2:
+                    System.out.print("\033\143"); // limpa tela do terminal
+                    locadora.realizaLocacao();
+                    System.out.println("Pressione enter para voltar ao menu...");
+                    Teclado.leString();
+                    break;
 
+                    // continuar case 3
                 default:
                     break;
             }

@@ -14,6 +14,15 @@ public class Locacao {
     public Locacao() {
     }
 
+    
+    // construtor para alugar
+    public Locacao(Veiculo veiculo, String cliente, String origem, int qt_dias_reserva) {
+        this.veiculo = veiculo;
+        this.cliente = cliente;
+        this.origem = origem;
+        this.qt_dias_reserva = qt_dias_reserva;
+    }
+
     // getters e setters
     public Veiculo getVeiculo() {
         return veiculo;
@@ -103,8 +112,8 @@ public class Locacao {
         cliente = dados[1];
         origem = dados[2];
         destino = dados[3];
-        km_rodado = Integer.parseInt(dados[4]);
-        qt_dias_reserva = Integer.parseInt(dados[5]);
-        qt_dias_realizado = Integer.parseInt(dados[6]);
+        km_rodado = Integer.parseInt("0" + dados[4]);
+        qt_dias_reserva = Integer.parseInt("0" + dados[5]);
+        qt_dias_realizado = dados.length == 7 ? Integer.parseInt("0" + dados[6]): 0;
     }
 }

@@ -94,7 +94,7 @@ public class Veiculo {
         ano = Integer.parseInt(dados[3]);
         odometro = Integer.parseInt(dados[4]);
         cidade = dados[5];
-        disponivel = Boolean.parseBoolean(dados[6]);
+        disponivel = dados[6].trim().equalsIgnoreCase("S");
         valor_diaria = Double.parseDouble(dados[7]);
         valor_km_rodado = Double.parseDouble(dados[8]);
     }

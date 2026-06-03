@@ -1,4 +1,7 @@
+// classe teclado com loop para entrada de tipos inválidos e aceitando acentos
+
 import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  * Classe que permite fazer leitura de dados do teclado
@@ -6,7 +9,7 @@ import java.io.*;
 public class Teclado {
 
     private static String s;
-    private static final InputStreamReader i = new InputStreamReader(System.in);
+    private static final InputStreamReader i = new InputStreamReader(System.in, Charset.forName("CP850"));
     private static final BufferedReader d = new BufferedReader(i);
 
     /**
