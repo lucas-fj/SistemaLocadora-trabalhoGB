@@ -22,7 +22,7 @@ public class Main {
             System.out.println("8 - Sair");
 
             escolha = Teclado.leInt("Digite sua escolha: ");
-            
+
             switch (escolha) {
                 case 1:
                     System.out.print("\033\143"); // limpa tela do terminal
@@ -30,7 +30,7 @@ public class Main {
                     System.out.println("Pressione enter para voltar ao menu...");
                     Teclado.leString();
                     break;
-                
+
                 case 2:
                     System.out.print("\033\143"); // limpa tela do terminal
                     locadora.realizaLocacao();
@@ -38,10 +38,56 @@ public class Main {
                     Teclado.leString();
                     break;
 
-                    // continuar case 3
+                case 3:
+                    System.out.print("\033\143"); // limpa tela do terminal
+                    locadora.realizaDevolucao();
+                    System.out.println("Pressione enter para voltar ao menu...");
+                    Teclado.leString();
+                    break;
+
+                case 4:
+                    System.out.println("Em construção...");
+                    break;
+
+                case 5:
+                    System.out.println("Em construção...");
+                    break;
+
+                case 6:
+                    System.out.print("\033\143"); // limpa tela do terminal
+                    locadora.salvaDados();
+                    System.out.println("Dados salvos com sucesso.");
+                    System.out.println("Pressione enter para voltar ao menu...");
+                    Teclado.leString();
+                    break;
+
+                case 7:
+                    mostrarNomes();
+                    break;
+
+                case 8:
+                    System.out.println("\nObrigado por usar nossos serviços.");
+                    System.out.println("Fechando o sistema...\n");
+
+                    break;
                 default:
                     break;
             }
         }
+    }
+
+    //função para mostrar os nomes dos participantes 
+    public static void mostrarNomes() {
+        System.out.print("\033\143"); // limpa tela do terminal
+        System.out.println("------------------------------------------------");
+        System.out.println("|                  Integrantes                 |");
+        System.out.printf("| %-44s |\n", "Arthur Ferreira da Silva");
+        System.out.printf("| %-44s |\n", "Leonardo Fernandes");
+        System.out.printf("| %-44s |\n", "Lucas Furquim Jardim");
+        System.out.printf("| %-44s |\n", "João Schmidt");
+        System.out.println("------------------------------------------------");
+
+        System.out.println("\nPressione ENTER para voltar ao menu...");
+        Teclado.leString();
     }
 }

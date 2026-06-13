@@ -60,7 +60,7 @@ public class Locadora {
                 bufferVeiculos.newLine();
             }
 
-            // salva locacoes no txt
+            // salva locações no txt
             for (Locacao l : locacoes) {
                 bufferLocacoes.write(l.serializar());
                 bufferLocacoes.newLine();
@@ -145,12 +145,13 @@ public class Locadora {
                     System.out.println("Cidade não encontrada.");
                 }
                 break;
+
             default:
                 break;
         }
     }
 
-    // métoo para realizar locação
+    // método para realizar locação
     public void realizaLocacao() {
         String cidade = Teclado.leString("Em qual cidade você deseja alugar o veículo? ");
         encontrado = false;
@@ -182,7 +183,7 @@ public class Locadora {
             return;
         }
 
-        // recebendo dados do usuário e criando a locacao
+        // recebendo dados do usuário e criando a locação
         String nomeCliente = Teclado.leString("Digite seu nome: ");
         // verifica se o cliente possui algum aluguel em aberto
         for (Locacao l : locacoes) {
@@ -191,6 +192,7 @@ public class Locadora {
                 return;
             }
         }
+
         int qtDias = Teclado.leInt("Digite a quantidade de dias do aluguel: ");
         double valorDiarias = veiculoSelecionado.getValor_diaria() * qtDias;
         System.out.printf("Valor da diária: R$%.2f", veiculoSelecionado.getValor_diaria());
@@ -207,5 +209,71 @@ public class Locadora {
         locacoes.add(locacao); // adicionando a locação no arraylist
         veiculoSelecionado.setDisponivel(false);// seta veículo como indisponível
         System.out.println("Locação realizada com sucesso.");
+    }
+
+    // Devolução do veículo
+    public void realizaDevolucao() {
+        String nomeCliente = Teclado.leString("Digite o nome do cliente: ");
+        String cidadeDevolucao = Teclado.leString("Digite a cidade de devolução: ");
+        int kmPercorridos = Teclado.leInt("Digite a quilometragem percorrida: ");
+
+        // Checa se o veículo tá indisponível (alugado)
+        Locacao locacaoAberta = null;
+        for (Locacao l : locacoes) {
+            if (l.getCliente().equalsIgnoreCase(nomeCliente) && !l.getVeiculo().isDisponivel()) {
+                locacaoAberta = l;
+                break;
+            }
+        }
+
+        if (locacaoAberta == null) {
+            System.out.println("Não existe locação em aberto para esse cliente.");
+            return;
+        }
+
+        int diasContratados = locacaoAberta.getQt_dias_reserva();
+        System.out.println("Dias contratados: " + diasContratados);
+
+        int diasRealizados = Teclado.leInt("Digite a quantidade real de dias que utilizou o carro: ");
+        locacaoAberta.setQt_dias_realizado(diasRealizados);
+
+        double valorDiaria = locacaoAberta.getVeiculo().getValor_diaria();
+        double diariasContratadas = diasContratados * valorDiaria;
+
+        double valorDiariasAjustadas;
+        if (diasRealizados < diasContratados) {
+            int diasNaoUtilizados = diasContratados - diasRealizados;
+            double diariasNaoUtilizadas = diasNaoUtilizados * valorDiaria;
+            double desconto = 0.20 * diariasNaoUtilizadas;
+            valorDiariasAjustadas = diariasContratadas - desconto;
+            System.out.printf("Desconto de 20%% sobre diárias não utilizadas: R$%.2f\n", desconto);
+        } else if (diasRealizados > diasContratados) {
+            int diasExtras = diasRealizados - diasContratados;
+            double diariasExtras = diasExtras * valorDiaria;
+            double multa = 0.30 * diariasExtras;
+            valorDiariasAjustadas = diariasContratadas + diariasExtras + multa;
+            System.out.printf("Multa de 30%% sobre diárias extras: R$%.2f\n", multa);
+        } else {
+            valorDiariasAjustadas = diariasContratadas;
+        }
+
+        // valores
+        double valorKm = kmPercorridos * locacaoAberta.getVeiculo().getValor_km_rodado();
+        double total = valorDiariasAjustadas + valorKm;
+
+        System.out.printf("Valor das diárias ajustadas: R$%.2f\n", valorDiariasAjustadas);
+        System.out.printf("Valor dos quilômetros rodados: R$%.2f\n", valorKm);
+        System.out.printf("Total a pagar: R$%.2f\n", total);
+
+        // atualiza dados e fecha o processo
+        locacaoAberta.setDestino(cidadeDevolucao);
+        locacaoAberta.setKm_rodado(kmPercorridos);
+
+        Veiculo v = locacaoAberta.getVeiculo();
+        v.setCidade(cidadeDevolucao);
+        v.setOdometro(v.getOdometro() + kmPercorridos);
+        v.setDisponivel(true);
+
+        System.out.println("Devolução registrada com sucesso. Veículo liberado para nova locação.");
     }
 }
