@@ -39,6 +39,22 @@ public class Locadora {
                 l.desserializar(linhaL, veiculos);
                 locacoes.add(l);
             }
+
+            // Ajusta disponibilidade dos veículos com base nas locações carregadas.
+            // Regra aprovada: qt_dias_realizado == 0 => locação ativa (veículo
+            // indisponível)
+            // caso contrário => locação finalizada (veículo disponível)
+            for (Locacao l : locacoes) {
+                if (l == null || l.getVeiculo() == null)
+                    continue;
+
+                if (l.getQt_dias_realizado() == 0) {
+                    l.getVeiculo().setDisponivel(false);
+                } else {
+                    l.getVeiculo().setDisponivel(true);
+                }
+            }
+
             bufferVeiculos.close();
             bufferLocacoes.close();
         } catch (IOException e) {
@@ -106,6 +122,7 @@ public class Locadora {
                 for (Veiculo v : veiculos) {
                     if (v.getCor().equalsIgnoreCase(cor)) {
                         System.out.println(v);
+                        encontrado = true;
                     }
                 }
 
@@ -122,6 +139,7 @@ public class Locadora {
                 for (Veiculo v : veiculos) {
                     if (v.getAno() == ano) {
                         System.out.println(v);
+                        encontrado = true;
                     }
                 }
 
@@ -138,6 +156,7 @@ public class Locadora {
                 for (Veiculo v : veiculos) {
                     if (v.getCidade().equalsIgnoreCase(cidade)) {
                         System.out.println(v);
+                        encontrado = true;
                     }
                 }
 
@@ -275,5 +294,73 @@ public class Locadora {
         v.setDisponivel(true);
 
         System.out.println("Devolução registrada com sucesso. Veículo liberado para nova locação.");
+    }
+
+    public void consultaLocacao() {
+
+        System.out.println("Consultar locações por:");
+        System.out.println("1 - Nome do cliente");
+        System.out.println("2 - Modelo do veículo");
+
+        int escolha = Teclado.leInt("Digite sua escolha: ");
+
+        boolean encontrado = false;
+
+        switch (escolha) {
+
+            case 1:
+                String cliente = Teclado.leString("Nome do cliente: ");
+
+                for (Locacao l : locacoes) {
+
+                    if (l.getCliente().equalsIgnoreCase(cliente)) {
+
+                        System.out.println("\n===== LOCAÇÃO =====");
+
+                        if (l.getVeiculo().isDisponivel()) {
+                            System.out.println("Status: Finalizada");
+                        } else {
+                            System.out.println("Status: Em aberto");
+                        }
+
+                        System.out.println(l);
+                        encontrado = true;
+                    }
+                }
+
+                if (!encontrado) {
+                    System.out.println("Nenhuma locação encontrada para este cliente.");
+                }
+                break;
+
+            case 2:
+                String modelo = Teclado.leString("Modelo do veículo: ");
+
+                for (Locacao l : locacoes) {
+
+                    if (l.getVeiculo().getModelo().equalsIgnoreCase(modelo)) {
+
+                        System.out.println("\n===== LOCAÇÃO =====");
+
+                        if (l.getVeiculo().isDisponivel()) {
+                            System.out.println("Status: Finalizada");
+                        } else {
+                            System.out.println("Status: Em aberto");
+                        }
+
+                        System.out.println(l);
+                        encontrado = true;
+                    }
+                }
+
+                if (!encontrado) {
+                    System.out.println("Nenhuma locação encontrada para este modelo.");
+                }
+                break;
+
+            default:
+                System.out.println("Opção inválida.");
+                break;
+        }
     }
 }

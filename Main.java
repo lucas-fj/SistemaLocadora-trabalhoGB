@@ -46,7 +46,10 @@ public class Main {
                     break;
 
                 case 4:
-                    System.out.println("Em construção...");
+                    System.out.println("\033\143");
+                    locadora.consultaLocacao();
+                    System.out.println("Pressione enter para voltar ao menu...");
+                    Teclado.leString();
                     break;
 
                 case 5:
@@ -66,9 +69,9 @@ public class Main {
                     break;
 
                 case 8:
+                    locadora.salvaDados();
                     System.out.println("\nObrigado por usar nossos serviços.");
                     System.out.println("Fechando o sistema...\n");
-
                     break;
                 default:
                     break;
@@ -84,7 +87,7 @@ public class Main {
         System.out.printf("| %-44s |\n", "Arthur Ferreira da Silva");
         System.out.printf("| %-44s |\n", "Leonardo Fernandes");
         System.out.printf("| %-44s |\n", "Lucas Furquim Jardim");
-        System.out.printf("| %-44s |\n", "João Schmidt");
+        System.out.printf("| %-44s |\n", "João Pedro Ouriques Severo");
         System.out.println("------------------------------------------------");
 
         System.out.println("\nPressione ENTER para voltar ao menu...");

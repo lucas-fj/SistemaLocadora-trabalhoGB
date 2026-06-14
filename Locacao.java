@@ -116,4 +116,12 @@ public class Locacao {
         qt_dias_reserva = Integer.parseInt("0" + dados[5]);
         qt_dias_realizado = dados.length == 7 ? Integer.parseInt("0" + dados[6]): 0;
     }
+
+
+    @Override
+    public String toString() {
+        return "Veiculo: " + veiculo + "\nCliente: " + cliente + "\nOrigem: " + origem + "\nDestino: " + destino
+                + "\nKM rodado: " + km_rodado + "km" + "\nDias reservados: " + qt_dias_reserva + "\nDias utilizados: "
+                + qt_dias_realizado;
+    }
 }
