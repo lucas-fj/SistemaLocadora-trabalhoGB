@@ -39,12 +39,28 @@ public class Locadora {
                 l.desserializar(linhaL, veiculos);
                 locacoes.add(l);
             }
+
+            // Ajusta disponibilidade dos veículos com base nas locações carregadas.
+            // Regra aprovada: qt_dias_realizado == 0 => locação ativa (veículo indisponível)
+            // caso contrário => locação finalizada (veículo disponível)
+            for (Locacao l : locacoes) {
+                if (l == null || l.getVeiculo() == null) continue;
+
+                if (l.getQt_dias_realizado() == 0) {
+                    l.getVeiculo().setDisponivel(false);
+                } else {
+                    l.getVeiculo().setDisponivel(true);
+                }
+            }
+
             bufferVeiculos.close();
             bufferLocacoes.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 
     // método para salvar dados nos arquivos
     public void salvaDados() {
@@ -106,6 +122,7 @@ public class Locadora {
                 for (Veiculo v : veiculos) {
                     if (v.getCor().equalsIgnoreCase(cor)) {
                         System.out.println(v);
+                        encontrado = true;
                     }
                 }
 
@@ -122,6 +139,7 @@ public class Locadora {
                 for (Veiculo v : veiculos) {
                     if (v.getAno() == ano) {
                         System.out.println(v);
+                        encontrado = true;
                     }
                 }
 
@@ -138,6 +156,7 @@ public class Locadora {
                 for (Veiculo v : veiculos) {
                     if (v.getCidade().equalsIgnoreCase(cidade)) {
                         System.out.println(v);
+                        encontrado = true;
                     }
                 }
 
@@ -276,4 +295,105 @@ public class Locadora {
 
         System.out.println("Devolução registrada com sucesso. Veículo liberado para nova locação.");
     }
+
+    public void consultaLocacao() {
+        // Lê do usuário um texto para buscar: pode ser nome do cliente OU modelo do veículo.
+        // A validação evita consultas vazias e a lógica divide resultados em duas seções:
+        //  - LOCAÇÕES ATIVAS: veículo está indisponível
+        //  - LOCAÇÕES FINALIZADAS: veículo está disponível
+        String busca = Teclado.leString("Informe o nome do cliente ou modelo do veículo para consulta: ");
+
+        // if: valida entrada. Se for nula ou vazia, encerra a consulta.
+        if (busca == null || busca.trim().isEmpty()) {
+            System.out.println("Busca vazia.");
+            return;
+        }
+
+        // Converte para minúsculas para comparar sem diferenciar maiúsculas/minúsculas.
+        String buscaLower = busca.trim().toLowerCase();
+
+        boolean encontrouAtivas = false;
+        boolean encontrouFinalizadas = false;
+
+        System.out.println("\n===== LOCAÇÕES ATIVAS =====");
+
+        for (Locacao l : locacoes) {
+            if (l == null) continue;
+
+            String cliente = l.getCliente();
+            Veiculo v = l.getVeiculo();
+
+            boolean matchCliente = cliente != null && cliente.toLowerCase().contains(buscaLower);
+            boolean matchModelo = v != null && v.getModelo() != null && v.getModelo().toLowerCase().contains(buscaLower);
+
+            if ((matchCliente || matchModelo) && v != null && !v.isDisponivel()) {
+                encontrouAtivas = true;
+
+                System.out.println("VEÍCULO:");
+                System.out.println("  código: " + v.getCodigo());
+                System.out.println("  modelo: " + v.getModelo());
+                System.out.println("  cor: " + v.getCor());
+                System.out.println("  ano: " + v.getAno());
+                System.out.println("  odometro: " + v.getOdometro() + " km");
+                System.out.println("  cidade: " + v.getCidade());
+                System.out.println("  disponivel: " + v.isDisponivel());
+                System.out.println("  valor_diaria: R$" + String.format("%.2f", v.getValor_diaria()));
+                System.out.println("  valor_km_rodado: R$" + String.format("%.2f", v.getValor_km_rodado()));
+
+                System.out.println("LOCAÇÃO:");
+                System.out.println("  cliente: " + l.getCliente());
+                System.out.println("  origem: " + l.getOrigem());
+                System.out.println("  destino: " + l.getDestino());
+                System.out.println("  km_rodado: " + l.getKm_rodado() + " km");
+                System.out.println("  qt_dias_reserva: " + l.getQt_dias_reserva());
+                System.out.println("  qt_dias_realizado: " + l.getQt_dias_realizado());
+                System.out.println("--------------------------------------------");
+            }
+        }
+
+        if (!encontrouAtivas) {
+            System.out.println("Nenhuma locação ativa encontrada para a busca informada.");
+        }
+
+        System.out.println("\n===== LOCAÇÕES FINALIZADAS =====");
+
+        for (Locacao l : locacoes) {
+            if (l == null) continue;
+
+            String cliente = l.getCliente();
+            Veiculo v = l.getVeiculo();
+
+            boolean matchCliente = cliente != null && cliente.toLowerCase().contains(buscaLower);
+            boolean matchModelo = v != null && v.getModelo() != null && v.getModelo().toLowerCase().contains(buscaLower);
+
+            if ((matchCliente || matchModelo) && v != null && v.isDisponivel()) {
+                encontrouFinalizadas = true;
+
+                System.out.println("VEÍCULO:");
+                System.out.println("  código: " + v.getCodigo());
+                System.out.println("  modelo: " + v.getModelo());
+                System.out.println("  cor: " + v.getCor());
+                System.out.println("  ano: " + v.getAno());
+                System.out.println("  odometro: " + v.getOdometro() + " km");
+                System.out.println("  cidade: " + v.getCidade());
+                System.out.println("  disponivel: " + v.isDisponivel());
+                System.out.println("  valor_diaria: R$" + String.format("%.2f", v.getValor_diaria()));
+                System.out.println("  valor_km_rodado: R$" + String.format("%.2f", v.getValor_km_rodado()));
+
+                System.out.println("LOCAÇÃO:");
+                System.out.println("  cliente: " + l.getCliente());
+                System.out.println("  origem: " + l.getOrigem());
+                System.out.println("  destino: " + l.getDestino());
+                System.out.println("  km_rodado: " + l.getKm_rodado() + " km");
+                System.out.println("  qt_dias_reserva: " + l.getQt_dias_reserva());
+                System.out.println("  qt_dias_realizado: " + l.getQt_dias_realizado());
+                System.out.println("--------------------------------------------");
+            }
+        }
+
+        if (!encontrouFinalizadas) {
+            System.out.println("Nenhuma locação finalizada encontrada para a busca informada.");
+        }
+    }
 }
+
