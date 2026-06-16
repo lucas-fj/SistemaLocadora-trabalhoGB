@@ -53,7 +53,10 @@ public class Main {
                     break;
 
                 case 5:
-                    System.out.println("Em construção...");
+                    System.out.print("\033\143"); // limpa tela do terminal
+                    locadora.relatorioResumo();
+                    System.out.println("\nPressione enter para voltar ao menu...");
+                    Teclado.leString();
                     break;
 
                 case 6:

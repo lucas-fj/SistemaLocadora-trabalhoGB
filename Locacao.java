@@ -116,7 +116,31 @@ public class Locacao {
         qt_dias_reserva = Integer.parseInt("0" + dados[5]);
         qt_dias_realizado = dados.length == 7 ? Integer.parseInt("0" + dados[6]): 0;
     }
-
+  // calcula o valor total das diárias com ajustes (desconto ou multa)
+     public double valorDiarias() {
+        if (veiculo == null) return 0;
+        double diariasContratadas = qt_dias_reserva * veiculo.getValor_diaria();
+        if (qt_dias_realizado == 0) {
+            return diariasContratadas; // locação ainda ativa, retorna estimativa
+        }
+        if (qt_dias_realizado < qt_dias_reserva) {
+            int diasNaoUtilizados = qt_dias_reserva - qt_dias_realizado;
+            double desconto = 0.20 * diasNaoUtilizados * veiculo.getValor_diaria();
+            return diariasContratadas - desconto;
+        } else if (qt_dias_realizado > qt_dias_reserva) {
+            int diasExtras = qt_dias_realizado - qt_dias_reserva;
+            double diariasExtras = diasExtras * veiculo.getValor_diaria();
+            double multa = 0.30 * diariasExtras;
+            return diariasContratadas + diariasExtras + multa;
+        } else {
+            return diariasContratadas;
+        }
+    }
+    // calcula o valor total dos km rodados
+    public double valorKmRodado() {
+        if (veiculo == null) return 0;
+        return km_rodado * veiculo.getValor_km_rodado();
+    }
 
     @Override
     public String toString() {

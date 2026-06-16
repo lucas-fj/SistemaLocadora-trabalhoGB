@@ -70,14 +70,23 @@ public class Locadora {
             FileWriter writerLocacoes = new FileWriter("locacoes.txt");
             BufferedWriter bufferLocacoes = new BufferedWriter(writerLocacoes);
 
+            // escreve cabecalho de veiculos (garante que carregaDados() nao pule a primeira linha de dados)
+            bufferVeiculos.write("codigo\tmodelo\tcor\tano\todometro\tcidade\tdisponivel\tvalorDiaria\tvalorKmRodado");
+            bufferVeiculos.newLine();
+
             // salva veiculos no txt
             for (Veiculo v : veiculos) {
                 bufferVeiculos.write(v.serializar());
                 bufferVeiculos.newLine();
             }
 
-            // salva locações no txt
+            // escreve cabecalho de locacoes
+            bufferLocacoes.write("codigoVeiculo\tcliente\torigem\tdestino\tkmRodado\tqtDiasReserva\tqtDiasRealizado");
+            bufferLocacoes.newLine();
+
+            // salva locacoes no txt (pula locacoes com veiculo nulo para evitar NPE)
             for (Locacao l : locacoes) {
+                if (l == null || l.getVeiculo() == null) continue;
                 bufferLocacoes.write(l.serializar());
                 bufferLocacoes.newLine();
             }
@@ -317,7 +326,7 @@ public class Locadora {
 
                         System.out.println("\n===== LOCAÇÃO =====");
 
-                        if (l.getVeiculo().isDisponivel()) {
+                        if (l.getQt_dias_realizado() > 0) {
                             System.out.println("Status: Finalizada");
                         } else {
                             System.out.println("Status: Em aberto");
@@ -342,7 +351,7 @@ public class Locadora {
 
                         System.out.println("\n===== LOCAÇÃO =====");
 
-                        if (l.getVeiculo().isDisponivel()) {
+                        if (l.getQt_dias_realizado() > 0) {
                             System.out.println("Status: Finalizada");
                         } else {
                             System.out.println("Status: Em aberto");
@@ -362,5 +371,56 @@ public class Locadora {
                 System.out.println("Opção inválida.");
                 break;
         }
+    }
+      public void relatorioResumo() {
+        int totalKmRodado = 0;
+        int totalDiasContratados = 0;
+        int totalDiasRealizados = 0;
+        double totalValorDiariasContratadas = 0;
+        double totalValorDiariasExtras = 0;
+        double totalValorKmRodado = 0;
+        double totalGeral = 0;
+        int qtdFinalizadas = 0;
+
+        for (Locacao l : locacoes) {
+            // pula locações com veículo não encontrado
+            if (l == null || l.getVeiculo() == null) continue;
+            // locação finalizada = qt_dias_realizado > 0
+            if (l.getQt_dias_realizado() > 0) {
+                qtdFinalizadas++;
+
+                totalKmRodado += l.getKm_rodado();
+                totalDiasContratados += l.getQt_dias_reserva();
+                totalDiasRealizados += l.getQt_dias_realizado();
+
+                double diariasContratadas = l.getQt_dias_reserva() * l.getVeiculo().getValor_diaria();
+                totalValorDiariasContratadas += diariasContratadas;
+
+                double valorDiariasAjustadas = l.valorDiarias();
+                totalValorDiariasExtras += (valorDiariasAjustadas - diariasContratadas);
+
+                double valorKm = l.valorKmRodado();
+                totalValorKmRodado += valorKm;
+
+                totalGeral += valorDiariasAjustadas + valorKm;
+            }
+        }
+
+        System.out.println("\n========== RESUMO DAS LOCAÇÕES FINALIZADAS ==========");
+
+        if (qtdFinalizadas == 0) {
+            System.out.println("Nenhuma locação finalizada encontrada.");
+            return;
+        }
+
+        System.out.println("Locações finalizadas:              " + qtdFinalizadas);
+        System.out.println("Total de km rodados:               " + totalKmRodado + " km");
+        System.out.println("Total de dias contratados:         " + totalDiasContratados);
+        System.out.println("Total de dias realizados:          " + totalDiasRealizados);
+        System.out.printf("Valor das diárias contratadas:     R$%.2f\n", totalValorDiariasContratadas);
+        System.out.printf("Valor das diárias extras:          R$%.2f\n", totalValorDiariasExtras);
+        System.out.printf("Valor dos km rodados:              R$%.2f\n", totalValorKmRodado);
+        System.out.printf("Valor total das locações:          R$%.2f\n", totalGeral);
+        System.out.println("======================================================");
     }
 }
